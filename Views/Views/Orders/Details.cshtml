@@ -1,0 +1,210 @@
+@model GestionPedidos.Models.Domain.Order
+@{
+    ViewData["Title"] = $"Pedido #{Model.Id}";
+    var currentUser = ViewBag.CurrentUser as GestionPedidos.Models.Domain.User;
+    var canEditStatus = currentUser?.Role == UserRole.Admin || currentUser?.Role == UserRole.Employee;
+}
+
+<div class="fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 style="color: var(--text-primary); font-weight: 700;">
+            <i class="bi bi-receipt"></i> Pedido #@Model.Id
+        </h1>
+        <div>
+            <a asp-action="Index" class="neu-button">
+                <i class="bi bi-arrow-left"></i> Volver a Pedidos
+            </a>
+            @if (Model.Status == OrderStatus.Pending)
+            {
+                <form asp-action="Cancel" asp-route-id="@Model.Id" method="post" class="d-inline">
+                    <button type="submit" class="neu-button" 
+                            onclick="return confirm('¿Está seguro de cancelar este pedido?')"
+                            style="background: linear-gradient(135deg, #f8d7da, #e17055); color: white;">
+                        <i class="bi bi-x-circle"></i> Cancelar Pedido
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="neu-card">
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div>
+                        <h4 style="color: var(--text-primary); margin-bottom: 0.5rem;">
+                            <i class="bi bi-person"></i> Cliente: @Model.Customer.Name
+                        </h4>
+                        <p style="color: var(--text-secondary); margin: 0;">
+                            <i class="bi bi-envelope"></i> @Model.Customer.Email
+                        </p>
+                    </div>
+                    <span class="status-badge status-@Model.Status.ToString().ToLower()">
+                        @Model.Status
+                    </span>
+                </div>
+
+                <div class="neu-card-inset mb-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Fecha del Pedido:</strong><br>
+                            <span style="color: var(--text-secondary);">
+                                @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")
+                            </span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Total del Pedido:</strong><br>
+                            <span style="color: var(--accent-color); font-size: 1.25rem; font-weight: 700;">
+                                @Model.Total.ToString("C")
+                            </span>
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    {
+                        <div class="mt-3">
+                            <strong>Notas:</strong><br>
+                            <span style="color: var(--text-secondary);">@Model.Notes</span>
+                        </div>
+                    }
+                </div>
+
+                <h5 style="color: var(--text-primary); margin-bottom: 1.5rem;">
+                    <i class="bi bi-list"></i> Productos del Pedido
+                </h5>
+
+                <div class="neu-table">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Precio Unitario</th>
+                                <th>Cantidad</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OrderItems)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@item.Product.Name</strong>
+                                        @if (!string.IsNullOrEmpty(item.Product.Category))
+                                        {
+                                            <br><small style="color: var(--text-secondary);">@item.Product.Category</small>
+                                        }
+                                    </td>
+                                    <td>@item.UnitPrice.ToString("C")</td>
+                                    <td>
+                                        <span class="status-badge status-processing">
+                                            @item.Quantity
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <strong style="color: var(--accent-color);">
+                                            @item.Subtotal.ToString("C")
+                                        </strong>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr style="background: var(--primary-bg);">
+                                <th colspan="3" class="text-right">Total del Pedido:</th>
+                                <th style="color: var(--accent-color); font-size: 1.25rem;">
+                                    @Model.Total.ToString("C")
+                                </th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        @if (canEditStatus)
+        {
+            <div class="col-lg-4">
+                <div class="neu-card">
+                    <h5 style="color: var(--text-primary); margin-bottom: 1.5rem;">
+                        <i class="bi bi-gear"></i> Gestión del Estado
+                    </h5>
+
+                    <div class="mb-3">
+                        <label class="form-label">Estado Actual:</label>
+                        <div class="neu-card-inset text-center">
+                            <span class="status-badge status-@Model.Status.ToString().ToLower()">
+                                @Model.Status
+                            </span>
+                        </div>
+                    </div>
+
+                    @if (Model.Status != OrderStatus.Cancelled && Model.Status != OrderStatus.Delivered)
+                    {
+                        <div class="mb-3">
+                            <label class="form-label">Cambiar Estado:</label>
+                            <div class="d-grid gap-2">
+                                @if (Model.Status == OrderStatus.Pending)
+                                {
+                                    <form asp-action="UpdateStatus" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@Model.Id" />
+                                        <input type="hidden" name="status" value="@((int)OrderStatus.Processing)" />
+                                        <button type="submit" class="neu-button w-100">
+                                            <i class="bi bi-arrow-right"></i> Marcar como Procesando
+                                        </button>
+                                    </form>
+                                }
+                                @if (Model.Status == OrderStatus.Processing)
+                                {
+                                    <form asp-action="UpdateStatus" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@Model.Id" />
+                                        <input type="hidden" name="status" value="@((int)OrderStatus.Shipped)" />
+                                        <button type="submit" class="neu-button w-100">
+                                            <i class="bi bi-truck"></i> Marcar como Enviado
+                                        </button>
+                                    </form>
+                                }
+                                @if (Model.Status == OrderStatus.Shipped)
+                                {
+                                    <form asp-action="UpdateStatus" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@Model.Id" />
+                                        <input type="hidden" name="status" value="@((int)OrderStatus.Delivered)" />
+                                        <button type="submit" class="neu-button-primary w-100">
+                                            <i class="bi bi-check-circle"></i> Marcar como Entregado
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <div class="neu-card-inset">
+                        <h6 style="color: var(--text-primary); margin-bottom: 1rem;">
+                            Estados del Pedido:
+                        </h6>
+                        <ul style="list-style: none; padding: 0; margin: 0; color: var(--text-secondary); font-size: 0.875rem;">
+                            <li class="d-flex align-items-center mb-2">
+                                <span class="status-badge status-pending me-2">Pendiente</span>
+                                Pedido creado, esperando procesamiento
+                            </li>
+                            <li class="d-flex align-items-center mb-2">
+                                <span class="status-badge status-processing me-2">Procesando</span>
+                                Pedido en preparación
+                            </li>
+                            <li class="d-flex align-items-center mb-2">
+                                <span class="status-badge status-shipped me-2">Enviado</span>
+                                Pedido en camino al cliente
+                            </li>
+                            <li class="d-flex align-items-center mb-2">
+                                <span class="status-badge status-delivered me-2">Entregado</span>
+                                Pedido completado exitosamente
+                            </li>
+                            <li class="d-flex align-items-center">
+                                <span class="status-badge status-cancelled me-2">Cancelado</span>
+                                Pedido cancelado
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
