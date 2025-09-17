@@ -1,0 +1,86 @@
+@model GestionPedidos.Models.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Iniciar Sesión";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="neu-card" style="max-width: 400px; width: 100%;">
+        <div class="text-center mb-4">
+            <h2 style="color: var(--accent-color); font-weight: 700;">
+                <i class="bi bi-box-seam" style="font-size: 3rem;"></i>
+            </h2>
+            <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">Bienvenido</h3>
+            <p style="color: var(--text-secondary);">Sistema de Gestión de Pedidos</p>
+        </div>
+
+        <form asp-action="Login" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-error" style="display: none;"></div>
+            
+            <div class="form-group">
+                <label asp-for="Email" class="form-label">
+                    <i class="bi bi-envelope"></i> Correo Electrónico
+                </label>
+                <input asp-for="Email" class="form-control" placeholder="usuario@ejemplo.com" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password" class="form-label">
+                    <i class="bi bi-lock"></i> Contraseña
+                </label>
+                <input asp-for="Password" type="password" class="form-control" placeholder="Tu contraseña" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <div class="d-flex align-items-center">
+                    <input asp-for="RememberMe" type="checkbox" id="rememberMe" style="margin-right: 0.5rem;" />
+                    <label for="rememberMe" style="margin-bottom: 0; color: var(--text-secondary);">
+                        Recordarme
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="neu-button-primary w-100 mb-3">
+                <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+            </button>
+
+            <input type="hidden" asp-for="ReturnUrl" />
+        </form>
+
+        <div class="neu-card-inset mt-4">
+            <h6 style="color: var(--text-primary); margin-bottom: 1rem;">Usuarios de Prueba:</h6>
+            <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                <div class="mb-2">
+                    <strong>Administrador:</strong><br>
+                    Email: admin@sistema.com<br>
+                    Password: admin123
+                </div>
+                <div class="mb-2">
+                    <strong>Cliente:</strong><br>
+                    Email: juan@email.com<br>
+                    Password: cliente123
+                </div>
+                <div>
+                    <strong>Empleado:</strong><br>
+                    Email: maria@email.com<br>
+                    Password: empleado123
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function() {
+            $('#Email').focus();
+        });
+
+        if ($('.field-validation-error').length > 0 || $('.validation-summary-errors').length > 0) {
+            $('.alert-error').show();
+        }
+    </script>
+}
