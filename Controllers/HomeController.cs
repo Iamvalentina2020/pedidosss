@@ -1,8 +1,8 @@
 using System.Diagnostics;
+using GestionPedidos.Models;
 using Microsoft.AspNetCore.Mvc;
-using pedidosss.Models;
 
-namespace pedidosss.Controllers
+namespace GestionPedidos.Controllers
 {
     public class HomeController : Controller
     {
