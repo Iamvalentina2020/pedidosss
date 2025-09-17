@@ -1,84 +1,22 @@
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
 
 body {
-    background: linear-gradient(135deg, #ffd6f4, #ff85c1);
-    color: #4b004b;
-    font-family: 'Quicksand', sans-serif;
-    margin: 0;
-    padding: 0;
-}
-
-.navbar {
-    background: linear-gradient(90deg, #ff69b4, #ffa3d7) !important;
-    box-shadow: 0 2px 8px rgba(255, 105, 180, 0.4);
-}
-
-.navbar-brand, .nav-link {
-    color: white !important;
-    font-weight: bold;
-}
-
-    .nav-link:hover {
-        color: #ffe0f0 !important;
-    }
-
-.container {
-    background-color: rgba(255, 255, 255, 0.85);
-    border-radius: 12px;
-    padding: 30px;
-    box-shadow: 0 0 15px rgba(255, 105, 180, 0.3);
-    margin-bottom: 20px;
-}
-
-footer {
-    background: linear-gradient(90deg, #ffa3d7, #ff69b4);
-    color: white;
-    text-align: center;
-    padding: 15px 0;
-}
-
-.btn, .btn-primary {
-    background: linear-gradient(90deg, #ff69b4, #ffa3d7);
-    border: none;
-    color: white;
-    border-radius: 8px;
-    padding: 10px 20px;
-    transition: all 0.3s ease-in-out;
-}
-
-    .btn:hover {
-        background: linear-gradient(90deg, #ffa3d7, #ffd6f4);
-        color: #4b004b;
-        transform: scale(1.05);
-    }
-input, select, textarea {
-    background-color: #fff0f7;
-    border: 1px solid #ff85c1;
-    border-radius: 6px;
-    padding: 10px;
-    margin-bottom: 15px;
-    width: 100%;
-    color: #4b004b;
-}
-
-label {
-    font-weight: 600;
-    color: #cc2e8d;
-}
-
-table {
-    background-color: rgba(255, 255, 255, 0.95);
-    border-collapse: collapse;
-    width: 100%;
-    margin-top: 15px;
-}
-
-th {
-    background-color: #ffaad4;
-    color: #4b004b;
-    padding: 10px;
-}
-
-td {
-    padding: 10px;
-    border-bottom: 1px solid #ffd6f4;
+    margin-bottom: 60px;
 }
