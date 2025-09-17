@@ -1,0 +1,209 @@
+@model IEnumerable<GestionPedidos.Models.Domain.Order>
+@{
+    ViewData["Title"] = "Pedidos";
+    var currentUser = ViewBag.CurrentUser as GestionPedidos.Models.Domain.User;
+    var isAdminOrEmployee = currentUser?.Role == UserRole.Admin || currentUser?.Role == UserRole.Employee;
+}
+
+<div class="fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 style="color: var(--text-primary); font-weight: 700;">
+            <i class="bi bi-cart"></i> 
+            @if (isAdminOrEmployee)
+            {
+                <span>Gestión de Pedidos</span>
+            }
+            else
+            {
+                <span>Mis Pedidos</span>
+            }
+        </h1>
+        @if (isAdminOrEmployee)
+        {
+            <a asp-action="Create" class="neu-button-primary">
+                <i class="bi bi-plus-circle"></i> Nuevo Pedido
+            </a>
+        }
+    </div>
+
+    @if (Model.Any())
+    {
+        @if (isAdminOrEmployee)
+        {
+            var pendingCount = Model.Count(o => o.Status == OrderStatus.Pending);
+            var processingCount = Model.Count(o => o.Status == OrderStatus.Processing);
+            var shippedCount = Model.Count(o => o.Status == OrderStatus.Shipped);
+            var deliveredCount = Model.Count(o => o.Status == OrderStatus.Delivered);
+
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: #856404;">@pendingCount</div>
+                        <div class="stat-label">Pendientes</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: #0056b3;">@processingCount</div>
+                        <div class="stat-label">Procesando</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: #0c5460;">@shippedCount</div>
+                        <div class="stat-label">Enviados</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: #155724;">@deliveredCount</div>
+                        <div class="stat-label">Entregados</div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="neu-table">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Pedido #</th>
+                        @if (isAdminOrEmployee)
+                        {
+                            <th>Cliente</th>
+                        }
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model.OrderByDescending(o => o.OrderDate))
+                    {
+                        <tr>
+                            <td>
+                                <strong style="color: var(--accent-color);">#@order.Id</strong>
+                            </td>
+                            @if (isAdminOrEmployee)
+                            {
+                                <td>
+                                    <div>
+                                        <strong>@order.Customer.Name</strong>
+                                        <br><small style="color: var(--text-secondary);">@order.Customer.Email</small>
+                                    </div>
+                                </td>
+                            }
+                            <td>
+                                <div>
+                                    <strong>@order.OrderDate.ToString("dd/MM/yyyy")</strong>
+                                    <br><small style="color: var(--text-secondary);">@order.OrderDate.ToString("HH:mm")</small>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="status-badge status-@order.Status.ToString().ToLower()">
+                                    @order.Status
+                                </span>
+                            </td>
+                            <td>
+                                <span class="status-badge status-processing">
+                                    @order.OrderItems.Count() productos
+                                </span>
+                            </td>
+                            <td>
+                                <strong style="color: var(--accent-color); font-size: 1.1rem;">
+                                    @order.Total.ToString("C")
+                                </strong>
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a asp-action="Details" asp-route-id="@order.Id" 
+                                       class="neu-button btn-sm">
+                                        <i class="bi bi-eye"></i> Ver
+                                    </a>
+                                    @if (order.Status == OrderStatus.Pending)
+                                    {
+                                        <form asp-action="Cancel" asp-route-id="@order.Id" method="post" class="d-inline">
+                                            <button type="submit" class="neu-button btn-sm" 
+                                                    onclick="return confirm('¿Cancelar este pedido?')"
+                                                    style="background: linear-gradient(135deg, #f8d7da, #e17055); color: white;">
+                                                <i class="bi bi-x"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="neu-card mt-4">
+            <h5 style="color: var(--text-primary); margin-bottom: 1.5rem;">
+                <i class="bi bi-info-circle"></i> Resumen de Pedidos
+            </h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="neu-card-inset">
+                        <h6 style="color: var(--text-primary);">Total de Pedidos: @Model.Count()</h6>
+                        <p style="color: var(--text-secondary); margin: 0;">
+                            Valor total: <strong style="color: var(--accent-color);">@Model.Sum(o => o.Total).ToString("C")</strong>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="neu-card-inset">
+                        <h6 style="color: var(--text-primary);">Productos más Vendidos:</h6>
+                        @{
+                            var topProducts = Model
+                                .SelectMany(o => o.OrderItems)
+                                .GroupBy(oi => oi.Product.Name)
+                                .OrderByDescending(g => g.Sum(oi => oi.Quantity))
+                                .Take(3);
+                        }
+                        @foreach (var product in topProducts)
+                        {
+                            <small style="color: var(--text-secondary); display: block;">
+                                @product.Key: @product.Sum(oi => oi.Quantity) unidades
+                            </small>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="neu-card text-center">
+            <i class="bi bi-cart-x" style="font-size: 4rem; color: var(--text-light); margin-bottom: 1rem;"></i>
+            <h4 style="color: var(--text-secondary);">
+                @if (isAdminOrEmployee)
+                {
+                    <span>No hay pedidos registrados</span>
+                }
+                else
+                {
+                    <span>Aún no tienes pedidos</span>
+                }
+            </h4>
+            <p style="color: var(--text-light);">
+                @if (isAdminOrEmployee)
+                {
+                    <span>Los pedidos aparecerán aquí una vez que se registren en el sistema.</span>
+                }
+                else
+                {
+                    <span>Cuando realices un pedido, aparecerá aquí con toda la información.</span>
+                }
+            </p>
+            @if (isAdminOrEmployee)
+            {
+                <a asp-action="Create" class="neu-button-primary mt-3">
+                    <i class="bi bi-plus-circle"></i> Crear Primer Pedido
+                </a>
+            }
+        </div>
+    }
+</div>
