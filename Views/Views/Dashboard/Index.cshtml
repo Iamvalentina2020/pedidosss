@@ -1,0 +1,183 @@
+@model GestionPedidos.Models.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 style="color: var(--text-primary); font-weight: 700;">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </h1>
+        <p style="color: var(--text-secondary); margin: 0;">
+            Bienvenido, <strong>@Model.CurrentUser.Name</strong>
+        </p>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="stat-card">
+            <div class="stat-number">@Model.TotalProducts</div>
+            <div class="stat-label">
+                <i class="bi bi-box"></i> Productos Activos
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-number">@Model.TotalOrders</div>
+            <div class="stat-label">
+                <i class="bi bi-cart"></i> Total de Pedidos
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-number">@Model.PendingOrders</div>
+            <div class="stat-label">
+                <i class="bi bi-clock"></i> Pedidos Pendientes
+            </div>
+        </div>
+
+        @if (Model.CurrentUser.Role == GestionPedidos.Models.Domain.UserRole.Admin || 
+             Model.CurrentUser.Role == GestionPedidos.Models.Domain.UserRole.Employee)
+        {
+            <div class="stat-card">
+                <div class="stat-number">@Model.TotalSales.ToString("C")</div>
+                <div class="stat-label">
+                    <i class="bi bi-currency-dollar"></i> Ventas Totales
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-number">@Model.TotalUsers</div>
+                <div class="stat-label">
+                    <i class="bi bi-people"></i> Usuarios Registrados
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="neu-card mt-4">
+        <h3 style="color: var(--text-primary); margin-bottom: 2rem;">
+            <i class="bi bi-lightning"></i> Acciones Rápidas
+        </h3>
+        <div class="btn-group">
+            @if (Model.CurrentUser.Role == GestionPedidos.Models.Domain.UserRole.Admin || 
+                 Model.CurrentUser.Role == GestionPedidos.Models.Domain.UserRole.Employee)
+            {
+                <a asp-controller="Orders" asp-action="Create" class="neu-button-primary">
+                    <i class="bi bi-plus-circle"></i> Nuevo Pedido
+                </a>
+                <a asp-controller="Products" asp-action="Create" class="neu-button">
+                    <i class="bi bi-box"></i> Agregar Producto
+                </a>
+                @if (Model.CurrentUser.Role == GestionPedidos.Models.Domain.UserRole.Admin)
+                {
+                    <a asp-controller="Users" asp-action="Create" class="neu-button">
+                        <i class="bi bi-person-plus"></i> Nuevo Usuario
+                    </a>
+                }
+            }
+            <a asp-controller="Orders" asp-action="Index" class="neu-button">
+                <i class="bi bi-list"></i> Ver Mis Pedidos
+            </a>
+            <a asp-controller="Products" asp-action="Index" class="neu-button">
+                <i class="bi bi-search"></i> Buscar Productos
+            </a>
+        </div>
+    </div>
+
+    @if (Model.RecentOrders.Any())
+    {
+        <div class="neu-card mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 style="color: var(--text-primary); margin: 0;">
+                    <i class="bi bi-clock-history"></i> Pedidos Recientes
+                </h3>
+                <a asp-controller="Orders" asp-action="Index" class="neu-button btn-sm">
+                    Ver Todos
+                </a>
+            </div>
+            
+            <div class="neu-table">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Pedido #</th>
+                            <th>Cliente</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Total</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model.RecentOrders)
+                        {
+                            <tr>
+                                <td><strong>#@order.Id</strong></td>
+                                <td>@order.Customer.Name</td>
+                                <td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <span class="status-badge status-@order.Status.ToString().ToLower()">
+                                        @order.Status
+                                    </span>
+                                </td>
+                                <td><strong>@order.Total.ToString("C")</strong></td>
+                                <td>
+                                    <a asp-controller="Orders" asp-action="Details" asp-route-id="@order.Id" 
+                                       class="neu-button btn-sm">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+    @if ((Model.CurrentUser.Role == GestionPedidos.Models.Domain.UserRole.Admin || 
+          Model.CurrentUser.Role == GestionPedidos.Models.Domain.UserRole.Employee) && 
+          Model.LowStockProducts.Any())
+    {
+        <div class="neu-card mt-4">
+            <h3 style="color: var(--accent-color); margin-bottom: 2rem;">
+                <i class="bi bi-exclamation-triangle"></i> Productos con Bajo Stock
+            </h3>
+            
+            <div class="neu-table">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Categoría</th>
+                            <th>Stock Actual</th>
+                            <th>Precio</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in Model.LowStockProducts)
+                        {
+                            <tr style="background: rgba(255, 107, 157, 0.05);">
+                                <td><strong>@product.Name</strong></td>
+                                <td>@product.Category</td>
+                                <td>
+                                    <span style="color: var(--accent-color); font-weight: 600;">
+                                        @product.Stock unidades
+                                    </span>
+                                </td>
+                                <td>@product.Price.ToString("C")</td>
+                                <td>
+                                    <a asp-controller="Products" asp-action="Edit" asp-route-id="@product.Id" 
+                                       class="neu-button btn-sm">
+                                        <i class="bi bi-pencil"></i> Editar
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
