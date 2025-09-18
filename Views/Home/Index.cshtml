@@ -1,36 +1,8 @@
-﻿@model List<pedidosss.Models.Product>
-
-@{
-    ViewData["Title"] = "Lista de Productos";
+﻿@{
+    ViewData["Title"] = "Home Page";
 }
 
-<h2>@ViewData["Title"]</h2>
-
-<a asp-action="Create" class="btn btn-primary mb-3">Crear nuevo producto</a>
-
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Precio</th>
-            <th>Stock</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var p in Model)
-        {
-            <tr>
-                <td>@p.Nombre</td>
-                <td>@p.Precio</td>
-                <td>@p.Stock</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@p.Id">Editar</a> |
-                    <a asp-action="Details" asp-route-id="@p.Id">Detalles</a> |
-                    <a asp-action="Delete" asp-route-id="@p.Id">Eliminar</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
