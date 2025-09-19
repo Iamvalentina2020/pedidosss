@@ -1,4 +1,4 @@
-namespace pedidosss.Models
+namespace GestionPedidos.Models
 {
     public class ErrorViewModel
     {
