@@ -21,6 +21,7 @@ namespace GestionPedidos.Models.Domain
 
         public string Notes { get; set; } = string.Empty;
 
+        // Navigation properties
         [ForeignKey("CustomerId")]
         public virtual User Customer { get; set; } = null!;
         public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();

@@ -105,8 +105,10 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
         $(document).ready(function() {
+            // Auto-focus on name field
             $('#Name').focus();
 
+            // Format price input
             $('#Price').on('input', function() {
                 let value = $(this).val();
                 if (value && !isNaN(value)) {
@@ -114,6 +116,7 @@
                 }
             });
 
+            // Validate stock input
             $('#Stock').on('input', function() {
                 let value = parseInt($(this).val());
                 if (value < 0) {

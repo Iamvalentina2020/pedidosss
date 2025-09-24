@@ -43,6 +43,7 @@ namespace GestionPedidos.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    // Check if email already exists
                     var existingUser = await _unitOfWork.Users.GetByEmailAsync(user.Email);
                     if (existingUser != null)
                     {
@@ -85,6 +86,7 @@ namespace GestionPedidos.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    // Check if email already exists for another user
                     var existingUser = await _unitOfWork.Users.GetByEmailAsync(user.Email);
                     if (existingUser != null && existingUser.Id != user.Id)
                     {
@@ -123,6 +125,7 @@ namespace GestionPedidos.Controllers
                 var user = await _unitOfWork.Users.GetByIdAsync(id);
                 if (user != null)
                 {
+                    user.IsActive = false; // Soft delete
                     _unitOfWork.Users.Update(user);
                     await _unitOfWork.SaveChangesAsync();
                     TempData["Success"] = "Usuario eliminado exitosamente";

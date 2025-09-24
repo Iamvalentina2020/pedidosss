@@ -24,6 +24,7 @@ namespace GestionPedidos.Models.Domain
         [Column(TypeName = "decimal(18,2)")]
         public decimal Subtotal { get; set; }
 
+        // Navigation properties
         [ForeignKey("OrderId")]
         public virtual Order Order { get; set; } = null!;
 

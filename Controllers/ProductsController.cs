@@ -19,6 +19,7 @@ namespace GestionPedidos.Controllers
         {
             IEnumerable<Product> products = await _unitOfWork.Products.GetAllAsync();
 
+            // Apply filters
             if (!string.IsNullOrEmpty(search))
             {
                 products = await _unitOfWork.Products.SearchByNameAsync(search);
@@ -140,7 +141,7 @@ namespace GestionPedidos.Controllers
                 var product = await _unitOfWork.Products.GetByIdAsync(id);
                 if (product != null)
                 {
-                    product.IsActive = false; 
+                    product.IsActive = false; // Soft delete
                     _unitOfWork.Products.Update(product);
                     await _unitOfWork.SaveChangesAsync();
                     TempData["Success"] = "Producto eliminado exitosamente";

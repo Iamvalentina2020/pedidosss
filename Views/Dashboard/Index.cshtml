@@ -13,6 +13,7 @@
         </p>
     </div>
 
+    <!-- Statistics Cards -->
     <div class="dashboard-grid">
         <div class="stat-card">
             <div class="stat-number">@Model.TotalProducts</div>
@@ -54,6 +55,7 @@
         }
     </div>
 
+    <!-- Quick Actions -->
     <div class="neu-card mt-4">
         <h3 style="color: var(--text-primary); margin-bottom: 2rem;">
             <i class="bi bi-lightning"></i> Acciones Rápidas
@@ -84,6 +86,7 @@
         </div>
     </div>
 
+    <!-- Recent Orders -->
     @if (Model.RecentOrders.Any())
     {
         <div class="neu-card mt-4">
@@ -135,6 +138,7 @@
         </div>
     }
 
+    <!-- Low Stock Alert (Admin/Employee only) -->
     @if ((Model.CurrentUser.Role == GestionPedidos.Models.Domain.UserRole.Admin || 
           Model.CurrentUser.Role == GestionPedidos.Models.Domain.UserRole.Employee) && 
           Model.LowStockProducts.Any())

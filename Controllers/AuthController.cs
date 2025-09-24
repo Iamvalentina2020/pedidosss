@@ -43,6 +43,7 @@ namespace GestionPedidos.Controllers
                 return View(model);
             }
 
+            // Store user in session
             HttpContext.Session.SetString("CurrentUser", JsonSerializer.Serialize(new
             {
                 user.Id,

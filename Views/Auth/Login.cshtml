@@ -75,10 +75,12 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
+        // Auto-focus on email field
         $(document).ready(function() {
             $('#Email').focus();
         });
 
+        // Show validation summary if there are errors
         if ($('.field-validation-error').length > 0 || $('.validation-summary-errors').length > 0) {
             $('.alert-error').show();
         }

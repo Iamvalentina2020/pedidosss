@@ -29,6 +29,7 @@ namespace GestionPedidos.Models.Domain
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public bool IsActive { get; set; } = true;
 
+        // Navigation property
         public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
     }
 }

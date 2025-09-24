@@ -28,6 +28,7 @@
 
     @if (Model.Any())
     {
+        <!-- Summary Cards (Admin/Employee only) -->
         @if (isAdminOrEmployee)
         {
             var pendingCount = Model.Count(o => o.Status == OrderStatus.Pending);
@@ -63,6 +64,7 @@
             </div>
         }
 
+        <!-- Orders Table -->
         <div class="neu-table">
             <table class="table table-hover">
                 <thead>
@@ -140,6 +142,7 @@
             </table>
         </div>
 
+        <!-- Order Details Preview -->
         <div class="neu-card mt-4">
             <h5 style="color: var(--text-primary); margin-bottom: 1.5rem;">
                 <i class="bi bi-info-circle"></i> Resumen de Pedidos

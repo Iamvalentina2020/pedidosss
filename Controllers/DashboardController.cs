@@ -35,6 +35,7 @@ namespace GestionPedidos.Controllers
                 TotalSales = await _unitOfWork.Orders.GetTotalSalesAsync()
             };
 
+            // Get recent orders based on user role
             if (currentUser.Role == UserRole.Admin || currentUser.Role == UserRole.Employee)
             {
                 var allOrders = await _unitOfWork.Orders.GetOrdersWithItemsAsync();
@@ -46,6 +47,7 @@ namespace GestionPedidos.Controllers
                 viewModel.RecentOrders = customerOrders.Take(5);
             }
 
+            // Get low stock products (only for admin/employee)
             if (currentUser.Role == UserRole.Admin || currentUser.Role == UserRole.Employee)
             {
                 var allProducts = await _unitOfWork.Products.GetAllAsync();

@@ -82,6 +82,7 @@ namespace GestionPedidos.Controllers
                 {
                     var items = viewModel.Items.Select(i => (i.ProductId, i.Quantity)).ToList();
                     
+                    // Validate stock
                     if (!await _orderService.ValidateStockAvailabilityAsync(items))
                     {
                         ModelState.AddModelError("", "Stock insuficiente para uno o más productos");

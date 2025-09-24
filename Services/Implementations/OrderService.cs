@@ -19,11 +19,13 @@ namespace GestionPedidos.Services.Implementations
             
             try
             {
+                // Validate stock availability
                 if (!await ValidateStockAvailabilityAsync(items))
                 {
                     throw new InvalidOperationException("Stock insuficiente para uno o más productos");
                 }
 
+                // Create order
                 var order = new Order
                 {
                     CustomerId = customerId,
@@ -35,6 +37,7 @@ namespace GestionPedidos.Services.Implementations
                 await _unitOfWork.Orders.AddAsync(order);
                 await _unitOfWork.SaveChangesAsync();
 
+                // Create order items and calculate total
                 decimal total = 0;
                 foreach (var (productId, quantity) in items)
                 {
@@ -54,6 +57,7 @@ namespace GestionPedidos.Services.Implementations
                     order.OrderItems.Add(orderItem);
                     total += subtotal;
 
+                    // Reduce stock
                     await _unitOfWork.Products.ReduceStockAsync(productId, quantity);
                 }
 
